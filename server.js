@@ -18,6 +18,13 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
 });
+// স্ট্যাটিক ফাইল বা index.html ব্রাউজারে দেখানোর জন্য
+const path = require('path');
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 app.listen(port, () => {
     console.log(`🚀 সার্ভার রানিং: http://localhost:${port}`);
 });
