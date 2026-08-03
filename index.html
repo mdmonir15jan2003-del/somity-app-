@@ -236,6 +236,16 @@
 
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-6">
         <h3 class="font-semibold text-teal-900 mb-3">দ্রুত কার্যক্রম</h3>
+        <!-- নতুন দৈনিক কালেকশন শর্টকাট বাটন -->
+<div class="mb-4">
+    <button onclick="switchTab('dailyCollection')" class="w-full flex items-center justify-center gap-3 p-4 rounded-xl bg-teal-700 text-white shadow-md hover:bg-teal-800 transition">
+        <i class="fa-solid fa-calculator text-2xl"></i>
+        <div class="text-left">
+            <div class="text-base font-bold">দৈনিক কালেকশন ফিচার</div>
+            <div class="text-xs text-teal-100">মাঠ পর্যায়ে একসাথে কিস্তি ও সঞ্চয় এন্ট্রি দিন</div>
+        </div>
+    </button>
+</div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <button onclick="switchTab('addMember')" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-teal-100 bg-teal-50 hover:bg-teal-100 transition">
             <i class="fa-solid fa-user-plus text-teal-700 text-lg"></i>
@@ -2429,5 +2439,24 @@ async function handleLogin(event) {
     }
 }
 </script>
+<!-- মোবাইল ফ্রেন্ডলি ফিক্সড বটম মেনু বার -->
+<div class="lg:hidden fixed bottom-0 left-0 right-0 bg-teal-950 text-white flex justify-around items-center py-2 px-1 border-t border-teal-800 z-50 shadow-lg">
+    <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-xs text-teal-200 hover:text-white p-1">
+        <i class="fa-solid fa-gauge-high text-lg"></i>
+        <span>ড্যাশবোর্ড</span>
+    </button>
+    <button onclick="switchTab('memberList')" class="flex flex-col items-center text-xs text-teal-200 hover:text-white p-1">
+        <i class="fa-solid fa-users text-lg"></i>
+        <span>সদস্য</span>
+    </button>
+    <button onclick="switchTab('dailyCollection')" class="flex flex-col items-center text-xs text-teal-200 hover:text-white p-1">
+        <i class="fa-solid fa-calculator text-lg"></i>
+        <span>লেকশন</span>
+    </button>
+    <button onclick="switchTab('ledger')" class="flex flex-col items-center text-xs text-teal-200 hover:text-white p-1">
+        <i class="fa-solid fa-book-open text-lg"></i>
+        <span>লেজার</span>
+    </button>
+</div>
 </body>
 </html>
