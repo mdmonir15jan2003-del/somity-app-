@@ -11,14 +11,22 @@ app.use(cors());
 app.use(express.json());
 
 // PostgreSQL Connection Pool Setup
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-    ssl: process.env.DB_HOST === 'localhost' ? false : { rejectUnauthorized: false }
-});
+const pool = new Pool(
+    process.env.NODE_ENV === 'production' || process.env.DATABASE_URL
+        ? {
+              connectionString: process.env.DATABASE_URL,
+              ssl: { rejectUnauthorized: false }
+          }
+        : {
+              user: process.env.DB_USER,
+              host: process.env.DB_HOST,
+              database: process.env.DB_DATABASE,
+              password: process.env.DB_PASSWORD,
+              port: process.env.DB_PORT,
+              ssl: false
+          }
+);
+
 // স্ট্যাটিক ফাইল বা index.html ব্রাউজারে দেখানোর জন্য
 const path = require('path');
 app.use(express.static(path.join(__dirname)));
