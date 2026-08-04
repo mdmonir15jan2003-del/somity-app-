@@ -2438,6 +2438,27 @@ async function handleLogin(event) {
         alert('সার্ভারে সমস্যা হয়েছে!');
     }
 }
+// ড্যাশবোর্ডে মোট সদস্যের সংখ্যা লোড করার ফাংশন
+async function loadDashboardStats() {
+    try {
+        const response = await fetch('/api/total-members');
+        const result = await response.json();
+        
+        if (result.success) {
+            const memberCountEl = document.getElementById('statTotalMembers');
+            if (memberCountEl) {
+                memberCountEl.innerText = result.totalMembers;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+    }
+}
+
+// পেজ লোড হওয়ার সাথে সাথে ফাংশনটি কল করার জন্য
+document.addEventListener('DOMContentLoaded', () => {
+    loadDashboardStats();
+});
 </script>
 <!-- মোবাইল ফ্রেন্ডলি ফিক্সড বটম মেনু বার -->
 <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-teal-950 text-white flex justify-around items-center py-2 px-1 border-t border-teal-800 z-50 shadow-lg">

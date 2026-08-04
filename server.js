@@ -60,6 +60,17 @@ app.post('/api/members', async (req, res) => {
     res.status(500).json({ success: false, error: 'Server Error' });
   }
 });
+// মোট সদস্যের সংখ্যা পাওয়ার জন্য এপিআই রাউট
+app.get('/api/total-members', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT COUNT(*) FROM members');
+        const totalMembers = parseInt(result.rows[0].count) || 0;
+        res.json({ success: true, totalMembers: totalMembers });
+    } catch (err) {
+        console.error('Error fetching total members:', err.message);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+});
 // লগইন এপিআই
 app.post('/api/login', async (req, res) => {
     try {
