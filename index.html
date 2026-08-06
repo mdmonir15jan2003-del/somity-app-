@@ -2446,10 +2446,10 @@ async function loadDashboardStats() {
         const result = await response.json();
         
         if (result.success) {
-            const memberCountEl = document.getElementById('statTotalMembers');
-            if (memberCountEl) {
-                memberCountEl.innerText = result.totalMembers;
-            }
+           const memberCountEl = document.getElementById('statTotalMembers');
+if (memberCountEl) {
+    memberCountEl.innerText = result.totalMembers;
+}
         }
     } catch (error) {
         console.error('Failed to load stats:', error);
