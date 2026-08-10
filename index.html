@@ -1651,50 +1651,62 @@ function onLedgerMemberChange() {
   renderLedger();
 }
 
-function renderLedger() {
-  const m = getMemberById(currentLedgerMemberId);
-  if (!m) return;
-  document.getElementById('ledgerPlaceholder').classList.add('hidden');
-  document.getElementById('ledgerContent').classList.remove('hidden');
+async function renderLedger() {
+    if (!currentLedgerMemberId) return;
+    try {
+        const [membersRes, txnsRes] = await Promise.all([
+            fetch('/api/members'),
+            fetch('/api/transactions')
+        ]);
+        const membersData = await membersRes.json();
+        const txnsData = await txnsRes.json();
 
-  document.getElementById('ledgerMemberName').textContent = `${m.name}(${m.custom_id}) (${m.id})`;
-  document.getElementById('ledgerMemberMeta').textContent = `ফোন: ${m.phone} | যোগদান: ${fmtDate(m.joinDate)}`;
-  document.getElementById('ledgerSavingsBalance').textContent = fmtMoney(m.savingsBalance);
-  document.getElementById('ledgerLoanBalance').textContent = fmtMoney(m.loanBalance);
+        const members = membersData.success ? membersData.data : (Array.isArray(membersData) ? membersData : []);
+        const allTxns = txnsData.success ? txnsData.data : (Array.isArray(txnsData) ? txnsData : []);
 
-  const txns = loadTransactions().filter(t => t.memberId === m.id).sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
-  const body = document.getElementById('ledgerBody');
-  const typeLabels = { loan_installment: 'ঋণ কিস্তি আদায়', saving_deposit: 'সঞ্চয় জমা', saving_withdrawal: 'সঞ্চয় উত্তোলন', loan_disburse: 'ঋণ প্রদান' };
+        const m = members.find(mem => mem.id === currentLedgerMemberId);
+        if (!m) return;
 
-  const rows = [];
-  if (m.openingBalance) {
-    rows.push(`<tr><td class="py-2 px-4 mono-num text-slate-500">${fmtDate(m.joinDate)}</td><td class="py-2 px-4">পূর্ব সঞ্চয় স্থিতি</td><td class="py-2 px-4 text-right mono-num text-emerald-600">${fmtMoney(m.openingBalance)}</td><td class="py-2 px-4 text-right">—</td><td class="py-2 px-4 text-right mono-num font-medium">${fmtMoney(m.openingBalance)}</td></tr>`);
-  }
+        document.getElementById('ledgerPlaceholder').classList.add('hidden');
+        document.getElementById('ledgerContent').classList.remove('hidden');
 
-  if (txns.length === 0 && !m.openingBalance) {
-    body.innerHTML = '';
-    document.getElementById('ledgerEmpty').classList.remove('hidden');
-  } else {
-    document.getElementById('ledgerEmpty').classList.add('hidden');
-    txns.forEach(t => {
-      const isCredit = t.type === 'saving_deposit';
-      const isDebit = t.type === 'saving_withdrawal' || t.type === 'loan_installment';
-      const balanceLabel = (t.type === 'loan_installment' || t.type === 'loan_disburse') ? `${fmtMoney(t.balanceAfter)} (ঋণ)` : `${fmtMoney(t.balanceAfter)} (সঞ্চয়)`;
-      rows.push(`<tr>
-        <td class="py-2 px-4 mono-num text-slate-500">${fmtDate(t.date)}</td>
-        <td class="py-2 px-4">${typeLabels[t.type]}${t.notes && t.type==='saving_deposit'||t.notes && t.type==='saving_withdrawal' ? ' — ' + (t.notes||'') : ''}</td>
-        <td class="py-2 px-4 text-right mono-num ${isCredit ? 'text-emerald-600' : 'text-slate-300'}">${isCredit ? fmtMoney(t.amount) : '—'}</td>
-        <td class="py-2 px-4 text-right mono-num ${isDebit ? 'text-red-600' : 'text-slate-300'}">${isDebit ? fmtMoney(t.amount) : (t.type==='loan_disburse' ? '<span class="text-sky-600">+'+fmtMoney(t.amount)+'</span>' : '—')}</td>
-        <td class="py-2 px-4 text-right mono-num font-medium">${balanceLabel}</td>
-      </tr>`);
-    });
-    body.innerHTML = rows.join('');
-  }
+        document.getElementById('ledgerMemberName').textContent = `${m.name || ''} (${m.custom_id || m.id || ''})`;
+        document.getElementById('ledgerMemberMeta').textContent = `ফোন: ${m.phone || ''} | যোগদান: ${fmtDate(m.joinDate)}`;
+        document.getElementById('ledgerSavingsBalance').textContent = fmtMoney(m.savingsBalance || 0);
+        document.getElementById('ledgerLoanBalance').textContent = fmtMoney(m.loanBalance || 0);
+
+        const txns = allTxns.filter(t => t.memberId === m.id).sort((a, b) => (new Date(b.createdAt || 0)) - (new Date(a.createdAt || 0)));
+        const body = document.getElementById('ledgerBody');
+        if (!body) return;
+
+        const typeLabels = { loan_installment: 'ঋণ কিস্তি আদায়', saving_deposit: 'সঞ্চয় জমা', saving_withdraw: 'সঞ্চয় উত্তোলন', loan_disburse: 'ঋণ প্রদান' };
+        
+        const rows = [];
+        if (m.openingBalance) {
+            rows.push(`<tr>
+                <td class="py-2 px-4 mono-num text-slate-500">${fmtDate(m.joinDate)}</td>
+                <td class="py-2 px-4 font-medium text-slate-700">প্রারম্ভিক জমা / ব্যালেন্স</td>
+                <td class="py-2 px-4 text-emerald-600 font-semibold">${fmtMoney(m.openingBalance)}</td>
+                <td class="py-2 px-4 text-slate-600">-</td>
+                <td class="py-2 px-4 text-slate-600">শুরুর ব্যালেন্স</td>
+            </tr>`);
+        }
+
+        txns.forEach(t => {
+            rows.push(`<tr>
+                <td class="py-2 px-4 mono-num text-slate-500">${fmtDate(t.date || t.createdAt)}</td>
+                <td class="py-2 px-4 font-medium text-slate-700">${typeLabels[t.type] || t.type || ''}</td>
+                <td class="py-2 px-4 text-emerald-600 font-semibold">${t.amount > 0 ? fmtMoney(t.amount) : '-'}</td>
+                <td class="py-2 px-4 text-rose-600 font-semibold">${t.amount < 0 ? fmtMoney(Math.abs(t.amount)) : '-'}</td>
+                <td class="py-2 px-4 text-slate-600">${t.note || ''}</td>
+            </tr>`);
+        });
+
+        body.innerHTML = rows.length > 0 ? rows.join('') : `<tr><td colspan="5" class="text-center py-4 text-slate-400">কোনো লেনদেন পাওয়া যায়নি</td></tr>`;
+    } catch (error) {
+        console.error('Error rendering ledger:', error);
+    }
 }
-
-function editMemberFromLedger() { if (currentLedgerMemberId) editMember(currentLedgerMemberId); }
-function deleteMemberFromLedger() { if (currentLedgerMemberId) confirmDeleteMember(currentLedgerMemberId); }
-
 /* ============================================================
    REPORTS
    ============================================================ */
