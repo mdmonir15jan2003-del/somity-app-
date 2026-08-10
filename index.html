@@ -2328,7 +2328,7 @@ const totalSavingsWithdraw = savingsWithdrawals.reduce((sum, item) => sum + item
     const cbCashIn = parseFloat(document.getElementById('cbCashIn')?.innerText.replace(/,/g, '') || 0);
     
     const outAmount = parseFloat(document.getElementById('cbCashOut')?.innerText.replace(/,/g, '') || 0);
-const cashInHand = (cbOpening + cbInHand) - outAmount;
+const cashInHand = (cbOpening + cbCashIn) - outAmount;
     const cbCashInHandEl = document.getElementById('cbCashInHand');
     if (cbCashInHandEl) {
         cbCashInHandEl.innerText = cashInHand.toLocaleString('bn-BD');
