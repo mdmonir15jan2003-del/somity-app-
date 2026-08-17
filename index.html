@@ -1880,8 +1880,8 @@
        ============================================================ */
     let currentLedgerMemberId = null;
 
-    async function refreshLedgerDataList() {
-      try {
+    async function refreshLedgerDatalist() {
+    try {
         const response = await fetch('/api/members');
         const result = await response.json();
         const members = result.success ? result.data : (Array.isArray(result) ? result : []);
@@ -1889,10 +1889,11 @@
         const dl = document.getElementById('ledgerMemberOptions');
         if (!dl) return;
 
-dl.innerHTML = members.map(m => `<option data-id="${m.id}" value="${m.name} (${m.custom_id || m.phone || ''})"></option>`).join('');
-      } catch (error) {
+        dl.innerHTML = members.map(m => `<option value="${memberDisplayLabel(m)}"></option>`).join('');
+    } catch (error) {
         console.error('Error refreshing ledger datalist:', error);
-      }
+    }
+}
 
 
       async function renderLedger() {
@@ -1902,7 +1903,7 @@ dl.innerHTML = members.map(m => `<option data-id="${m.id}" value="${m.name} (${m
             fetch('/api/members'),
             fetch('/api/transactions')
           ]);
-          const membersData = await membersRes.json();
+          const membersData = await membersRes.json();     
           const txnsData = await txnsRes.json();
 
           const members = membersData.success ? membersData.data : (Array.isArray(membersData) ? membersData : []);
@@ -2001,7 +2002,7 @@ ledgerBody.innerHTML = rows.length > 0 ? rows.join('') : `<tr><td colspan="5" cl
       });
 
       body.innerHTML = rows.length > 0 ? rows.join('') : `<tr><td colspan="5" class="text-center py-4 text-slate-400">কোনো লেনদেন পাওয়া যায়নি</td></tr>`;
-    } try {} catch (error) {
+     try {} catch (error) {
       console.error('Error rendering ledger:', error);
     }
  async function renderLedger() {
