@@ -167,7 +167,7 @@ app.post('/api/daily-expenses', async (req, res) => {
         const { id, category, title, amount, time } = req.body;
     const date = getTodayDate();
         const query = `INSERT INTO daily_expenses (id, category, title, amount, time, date) VALUES ($1, $2, $3, $4, $5, $6)`;
-        await pool.query(query, [id, category, title, amount, time, date]);
+await pool.query(query, [id, category, title, amount, time, date]);
         res.json({ success: true, id });
     } catch (err) {
         res.status(500).json({ error: err.message });

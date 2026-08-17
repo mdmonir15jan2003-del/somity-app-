@@ -1889,7 +1889,7 @@
         const dl = document.getElementById('ledgerMemberOptions');
         if (!dl) return;
 
-        dl.innerHTML = members.map(m => `<option value="${m.name} (${m.custom_id || m.id})"></option>`).join('');
+        dl.innerHTML = members.map(m => `<option value="${m.name} (${m.custom_id || m.id})">${m.name}</option>`).join('');
     } catch (error) {
         console.error('Error refreshing ledger datalist:', error);
     }
