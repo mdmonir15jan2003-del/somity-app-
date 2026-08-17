@@ -1880,7 +1880,7 @@
        ============================================================ */
     let currentLedgerMemberId = null;
 
-    async function refreshLedgerDatalist() {
+   async function refreshLedgerDatalist() {
     try {
         const response = await fetch('/api/members');
         const result = await response.json();
